@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NodeJS Server</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+    :root {
+        --bg: #0f1724;
+        --card: #1e293b;
+        --accent: #60a5fa;
+        --text: #e6eef8;
+        --muted: #94a3b8;
+        --success: #22c55e;
+        --error: #ef4444;
+        --radius: 10px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', monospace;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .card {
+        background: var(--card);
+        padding: 24px;
+        border-radius: var(--radius);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+        max-width: 500px;
+        width: 100%;
+        margin-bottom: 20px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .message {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .hint {
+        font-size: 14px;
+        color: var(--muted);
+        margin-bottom: 12px;
+    }
+
+    .code-block {
+        background: rgba(96,165,250,0.1);
+        color: var(--accent);
+        padding: 12px;
+        border-radius: var(--radius);
+        font-family: monospace;
+        overflow-x: auto;
+        margin-bottom: 12px;
+    }
+
+    button {
+        background: var(--accent);
+        color: var(--bg);
+        border: none;
+        padding: 10px 18px;
+        margin: 5px;
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    button:hover {
+        background: #3b82f6;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .response {
+        font-size: 14px;
+        margin-top: 12px;
+        color: var(--text);
+        word-break: break-word;
+    }
+
+    .notification {
+        visibility: hidden;
+        opacity: 0;
+        background: #22c55e33;
+        color: var(--success);
+        padding: 10px 14px;
+        border-radius: var(--radius);
+        margin-top: 12px;
+        transition: opacity 0.4s ease;
+        font-weight: 600;
+    }
+
+    .notification.show {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .notification.fade-out {
+        opacity: 0;
+        visibility: hidden;
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <div class="message">Welcome to our NodeJS server!</div>
+    <div class="hint">Try <code>/api/echo</code> via POST:</div>
+    <div class="code-block" id="curl-command">
+curl -X POST http://localhost/api/echo -H "Content-Type: application/json" -d '{"message":"Hello, NodeJS!"}'
+    </div>
+
+    <div>
+        <button onclick="copyToClipboard()">📋 Copy</button>
+        <button onclick="executeRequest()">⚡ Execute</button>
+    </div>
+
+    <div class="notification" id="notification">Curl command copied!</div>
+    <div class="response" id="response-output"></div>
+</div>
+
+<script>
+    function copyToClipboard() {
+        const text = document.getElementById('curl-command').innerText;
+        navigator.clipboard.writeText(text).then(() => showNotification())
+            .catch(() => showNotification('Failed to copy'));
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.ctrlKey && e.key === 'c') { e.preventDefault(); copyToClipboard(); }
+    });
+
+    function executeRequest() {
+        fetch('/api/echo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: 'Hello, NodeJS!' })
+        })
+        .then(res => res.json())
+        .then(data => document.getElementById('response-output').textContent = 'Server Response: ' + JSON.stringify(data))
+        .catch(err => document.getElementById('response-output').textContent = 'Error: ' + err);
+    }
+
+    function showNotification(msg = 'Curl command copied!') {
+        const note = document.getElementById('notification');
+        note.textContent = msg;
+        note.classList.add('show');
+        setTimeout(() => note.classList.add('fade-out'), 3000);
+        setTimeout(() => note.classList.remove('show', 'fade-out'), 4000);
+    }
+</script>
+
+</body>
+</html>
