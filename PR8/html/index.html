@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NodeJS Server</title>
+    <style>
+      body {
+        background: #fff;
+        color: #003366;
+        font-family: monospace;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        padding: 10px;
+        text-align: center;
+      }
+
+      .message {
+        font-size: 22px;
+        margin: 10px 0;
+      }
+
+      .hint {
+        font-size: 14px;
+        margin: 10px 0;
+        color: #003366;
+      }
+
+      .code-block {
+        background: #e0f0ff;
+        color: #003366;
+        padding: 8px;
+        border-radius: 4px;
+        margin: 10px 0;
+        font-family: monospace;
+      }
+
+      button {
+        background: #003366;
+        color: #fff;
+        border: none;
+        padding: 8px 16px;
+        margin: 5px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #0055aa;
+      }
+
+      .response {
+        font-size: 14px;
+        margin-top: 10px;
+        color: #003366;
+      }
+
+      .notification {
+        visibility: hidden;
+        opacity: 0;
+        background: #cce0ff;
+        color: #003366;
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin-top: 10px;
+        transition: opacity 0.5s;
+      }
+
+      .notification.show {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .notification.fade-out {
+        opacity: 0;
+        visibility: hidden;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="message">Welcome to our NodeJS server!</div>
+    <div class="hint">Try <code>/api/echo</code> via POST:</div>
+    <div class="code-block" id="curl-command">
+      curl -X POST http://localhost/api/echo -H "Content-Type: application/json"
+      -d '{"message":"Hello, NodeJS!"}'
+    </div>
+
+    <div class="notification" id="notification">Curl command copied!</div>
+
+    <div>
+      <button onclick="copyToClipboard()">📋 Copy</button>
+      <button onclick="executeRequest()">⚡ Execute</button>
+      <a href="/api/reference" target="_blank" style="text-decoration: none">
+        <button><span class="icon">📖</span> View Documentation</button></a>
+    </div>
+
+    <div class="response" id="response-output"></div>
+
+    <script>
+      function copyToClipboard() {
+        const text = document.getElementById('curl-command').innerText;
+        navigator.clipboard
+          .writeText(text)
+          .then(() => showNotification())
+          .catch(() => showNotification('Failed to copy'));
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'c') {
+          e.preventDefault();
+          copyToClipboard();
+        }
+      });
+
+      function executeRequest() {
+        fetch('/api/echo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'Hello, NodeJS!' }),
+        })
+          .then((res) => res.json())
+          .then(
+            (data) =>
+              (document.getElementById('response-output').textContent =
+                'Server Response: ' + JSON.stringify(data))
+          )
+          .catch(
+            (err) =>
+              (document.getElementById('response-output').textContent =
+                'Error: ' + err)
+          );
+      }
+
+      function showNotification(msg = 'Curl command copied!') {
+        const note = document.getElementById('notification');
+        note.textContent = msg;
+        note.classList.add('show');
+        setTimeout(() => note.classList.add('fade-out'), 3000);
+        setTimeout(() => note.classList.remove('show', 'fade-out'), 4000);
+      }
+    </script>
+  </body>
+</html>

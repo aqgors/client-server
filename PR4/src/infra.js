@@ -1,0 +1,73 @@
+const { logger } = require('./logger');
+
+/**
+ * A map to hold initialized infrastructure components.
+ * @type {Map<string, {testConnection: Function, closeConnection: Function, $db: any}>}
+ */
+
+const infrastructureMap = new Map();
+
+/**
+ * Bootstraps the infrastructure components of the application.
+ * Ensures all critical services are initialized before the app starts.
+ */
+
+const bootstrapInfra = async () => {
+  try {
+    logger.info('Initializing infrastructure...');
+    // Test PostgreSQL connection
+    logger.info('Testing PostgreSQL connection...');
+
+    const pgAdapter = require('./adapters/postgres');
+
+    await pgAdapter.testConnection();
+
+    infrastructureMap.set('postgres', pgAdapter);
+
+    logger.info('✅ PostgreSQL connection established.');
+
+    // Test MongoDB connection
+
+    logger.info('🌱 Testing MongoDB connection...');
+
+    const mongoAdapter = require('./adapters/mongo');
+
+    await mongoAdapter.testConnection();
+
+    infrastructureMap.set('mongo', mongoAdapter);
+
+    logger.info('✅ MongoDB connection established.');
+    // Add other infrastructure components here if needed
+    // Example: Redis, MongoDB, etc.
+    logger.info('Infrastructure initialized successfully.');
+  } catch (error) {
+    logger.error(error, 'Failed to initialize infrastructure');
+
+    throw error; // Exit the application if infra bootstrap fails
+  }
+};
+
+const shutdownInfra = async () => {
+  try {
+    logger.info('Shutting down infrastructure...');
+    // Close PostgreSQL connection
+    if (infrastructureMap.has('postgres')) {
+      await infrastructureMap.get('postgres').closeConnection();
+
+      logger.info('PostgreSQL connection closed.');
+    }
+    if (infrastructureMap.has('mongo')) {
+      await infrastructureMap.get('mongo').closeConnection();
+
+      logger.info('MongoDB connection closed.');
+    }
+  } catch (error) {
+    logger.error(error, 'Error during infrastructure shutdown');
+  }
+};
+
+module.exports = {
+  isInitialized: () => infrastructureMap.size > 0,
+  bootstrapInfra,
+  shutdownInfra,
+};

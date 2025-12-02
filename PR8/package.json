@@ -1,0 +1,63 @@
+{
+  "name": "client-server-architecture-practice-2025",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon --inspect=0.0.0.0:9229 ./src/server.js",
+    "test:load": "node ./tests/load",
+    "lint": "eslint ./src --fix",
+    "format": "prettier --write ./src",
+    "prepare": "[ \"$NODE_ENV\" = \"production\" ] || husky install",
+    "pg:ui": "drizzle-kit studio",
+    "pg:push": "drizzle-kit push",
+    "migrate:latest": "drizzle-kit migrate:latest",
+    "migrate:up": "drizzle-kit migrate:up",
+    "migrate:down": "drizzle-kit migrate:down",
+    "migrate:generate": "drizzle-kit generate:migration"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/json-schema": "^7.0.15",
+    "@types/node": "24.10.1",
+    "@types/pg": "^8.15.6",
+    "autocannon": "^8.0.0",
+    "drizzle-kit": "^0.31.7",
+    "eslint": "9.39.1",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-prettier": "5.5.4",
+    "husky": "^9.1.7",
+    "neostandard": "0.12.2",
+    "nodemon": "^3.1.11",
+    "prettier": "3.6.2"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^10.1.0",
+    "@fastify/auth": "5.0.3",
+    "@fastify/cookie": "11.0.2",
+    "@fastify/error": "4.2.0",
+    "@fastify/request-context": "6.2.1",
+    "@fastify/swagger": "9.5.2",
+    "@mgcrea/fastify-request-logger": "1.9.1",
+    "@mgcrea/pino-pretty-compact": "1.4.2",
+    "@scalar/fastify-api-reference": "^1.40.0",
+    "@types/pg": "8.15.5",
+    "bcrypt": "6.0.0",
+    "dotenv": "17.2.2",
+    "drizzle-orm": "^0.44.7",
+    "fastify": "5.6.1",
+    "ioredis": "^5.8.2",
+    "module-alias": "2.2.3",
+    "mongodb": "6.20.0",
+    "pg": "8.16.3",
+    "pino": "^9.5.0",
+    "pino-pretty": "13.1.1"
+  },
+  "_moduleAliases": {
+    "@": "src"
+  }
+}
